@@ -1,4 +1,4 @@
 # geneMaze
 
 - A true masterpiece!
-    - First Commit (gotta love it)
+    - First Commit (gotta love those)
