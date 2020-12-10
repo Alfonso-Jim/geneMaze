@@ -1,6 +1,7 @@
-const { Engine, Render, Runner, World, Bodies, MouseConstraint, Mouse } = Matter;
+const { Engine, Render, Runner, World, Bodies} = Matter;
 
-const width = 800;
+const cells = 3;
+const width = 600;
 const height = 600;
 
 const engine = Engine.create();
@@ -17,36 +18,81 @@ const render = Render.create({
 Render.run(render);
 Runner.run(Runner.create(), engine);
 
-World.add(world, MouseConstraint.create(engine,{
-    mouse: Mouse.create(render.canvas)
-}));
-
 // Walls
 const walls = [
-    Bodies.rectangle(400, 0, 800, 40, {isStatic: true}),
-    Bodies.rectangle(400, 600, 800, 40, {isStatic: true}),
-    Bodies.rectangle(0, 300, 40, 600, {isStatic: true}),
-    Bodies.rectangle(800, 300, 40, 600, {isStatic: true})
+    Bodies.rectangle(width/2, 0, width, 40, {isStatic: true}),
+    Bodies.rectangle(width/2, height, width, 40, {isStatic: true}),
+    Bodies.rectangle(0, height/2, 40, height, {isStatic: true}),
+    Bodies.rectangle(width, height/2, 40, height, {isStatic: true})
 ];
 World.add(world, walls);
 
-// Random Shapes
+// Maze Generation
 
-for (let i = 0; i < 60; i++) {
-    if (Math.random() > 0.5) {
-        World.add(
-            world, 
-            Bodies.rectangle(Math.random() * width, Math.random() * height, 50, 50)
-        ); 
-    } else {
-        World.add(
-            world, 
-            Bodies.circle(Math.random() * width, Math.random()* height, 35, {
-                render: {
-                    fillStyle: 'salmon',
-                }
-            })
-        );
+const shuffle = arr => {
+    let counter = arr.length;
+
+    while (counter > 0) {
+        const index = Math.floor(Math.random() * counter);
+
+        counter--;
+
+        const temp = arr[counter];
+        arr[counter] = arr[index];
+        arr[index] = temp;
     }
-    
-}
+
+    return arr;
+};
+
+const grid = Array(cells).fill(null).map(() => Array(cells).fill(false));
+
+const verticals = Array(cells).fill(null).map(() => Array(cells - 1).fill(false));
+
+const horizontals = Array(cells - 1).fill(null).map(() => Array(cells).fill(false));
+
+const startRow = Math.floor(Math.random() * cells);
+const startCoulumn = Math.floor(Math.random() * cells);
+
+const stepThroughCell = (row, column) => {
+    // if I have visited the cell at [row, col], then return
+    if (grid[row][column]) {
+        return;
+    }
+    // Mark this cell as being visited
+    grid[row][column] = true;
+    // Assemble randomly-ordered list of neighbors
+     const neighbors = shuffle([
+         [row - 1, column, 'up'],
+         [row, column + 1, 'right'],
+         [row + 1, column, 'down'],
+         [row, column - 1, 'left']
+     ]);
+    // for each neighbor
+    for (let neighbor of neighbors) {
+        const [nextRow, nextColumn, direction] = neighbor;     
+        // see if neighbor is out of bounds
+        if (nextRow < 0 || nextRow >= cells || nextColumn < 0 || nextColumn >= cells) {
+            continue;
+        }
+        // if we have visited that neighbor, continue to the next one
+        if (grid[nextRow][nextColumn]) {
+            continue;
+        }
+        // remove wall from either horizontals or verticals array
+        if (direction === 'left') {
+            verticals[row][column -1 ] = true;
+        } else if (direction === 'right') {
+            verticals[row][column] = true;
+        } else if (direction === 'up') {
+            horizontals[row -1][column] = true;
+        } else if(direction === 'down'){
+            horizontals[row][column] = true;
+        }
+        stepThroughCell(nextRow, nextColumn);
+    }
+    // visit that next cell
+
+};
+
+stepThroughCell(startRow, startCoulumn);
