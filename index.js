@@ -96,3 +96,13 @@ const stepThroughCell = (row, column) => {
 };
 
 stepThroughCell(startRow, startCoulumn);
+
+horizontals.forEach((row) => {
+    row.forEach((open) => {
+        if (open) {
+            return;
+        }
+
+        const wall = Bodies.rectangle();
+    });
+});
