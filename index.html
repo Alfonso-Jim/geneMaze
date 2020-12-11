@@ -2,15 +2,23 @@
 <html lang="en">
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.14.2/matter.min.js"></script>
-    <style>
-        body {
-           margin: 0; 
-        }
-    </style>
+    <link rel="stylesheet" href="style.css" />
     <meta charset="UTF-8">
     <title>GeneMaze</title>
 </head>
 <body>
+    <div class="info">
+        <div class="ordered">
+            <h1>To start playing use <b>W</b>&nbsp;<b>A</b>&nbsp;<b>S</b>&nbsp;<b>D</b> or</h1>
+            <h1 class="inner">the arrow keys: ↑ ↓ ← →</h1>
+        </div>
+    </div>
+    <div class="winner hidden">
+        <div class="ordered">
+            <h1>You Won!</h1>
+            <div class="restart"><button>Play Again</button></div>
+        </div>
+    </div>
     <script src="index.js"></script>
 </body>
 </html>
